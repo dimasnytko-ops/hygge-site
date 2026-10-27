@@ -1,46 +1,24 @@
-﻿// Все факты о студии — в одном месте. Источник: content/notes.md.
+// Тексты, цены и контакты редактируются в админке (/admin) и лежат в JSON рядом.
+// Здесь — только то, что меняется вместе с кодом и картинками.
+import contacts from './contacts.json';
+import priceData from './prices.json';
+import textData from './texts.json';
+import faqData from './faq.json';
 
-export const links = {
-  booking: 'https://n923998.yclients.ru/',
-  certificateBuy: 'https://o3632.yclients.com/loyalty',
-  telegram: 'https://t.me/hygge_photostudios',
-  max: 'https://max.ru/u/f9LHodD0cOKB_lCiODKIkMJM8mk3jhA0feKn38sTOQ2BfrPZEMmD_hKt8NA',
-  vk: 'https://vk.ru/hygge.photostudios',
-  gis: 'https://2gis.ru/tyumen/firm/70000001076935631',
-  yandex: 'https://yandex.ru/maps/-/CXbiQAid',
-};
+export const links = contacts.links;
 
-export const phone: { display: string; tel: string } | null = { display: '+7 999 366-88-80', tel: '+79993668880' };
+// Телефон пишется в админке как удобно читать; для ссылки tel: оставляем цифры и «+»
+export const phone = contacts.phone.trim()
+  ? { display: contacts.phone, tel: contacts.phone.replace(/[^\d+]/g, '') }
+  : null;
 
-export const address = {
-  city: 'Тюмень',
-  street: 'ул. Щорса, 2 к1',
-  floor: 'цокольный этаж',
-  howToFind: 'Вход со стороны двора, большая белая вывеска HYGGE.',
-  hours: 'Ежедневно с 10:00 до 22:00, по предварительной записи',
-  email: 'hygge.tmn@gmail.com',
-};
+export const address = { ...contacts.address, email: contacts.email };
+export const rating = contacts.rating;
 
-export const rating = { value: 5, votes: 284, reviews: 245 };
-
-export const slots = [
-  { minutes: 45, photos: '200–300' },
-  { minutes: 90, photos: '400–600' },
-];
-
-export const prices = [
-  { format: 'GAMMA', note: 'свет меняете сами', p45: 4500, p90: 6500 },
-  { format: 'CLASSIC', note: 'цветные фото', p45: 3700, p90: 5200 },
-  { format: 'CLASSIC ч/б', note: 'чёрно-белые фото', p45: 3700, p90: 5200 },
-];
-
-export const extras = [
-  { name: 'ИИ-кадрирование', price: 300, folders: ['оригиналы', 'кадрированные ч/б версии'] },
-  { name: 'Ч/б фильтр', price: 300, folders: ['оригиналы', 'ч/б версии без кадрирования'] },
-  { name: 'Кадрирование + ч/б', price: 500, folders: ['оригиналы', 'кадрированные ч/б', 'ч/б без кадрирования'] },
-];
-
-export const extraPerson = 900;
+export const { slots, prices, extras } = priceData;
+export const pricesNote = priceData.note;
+export const texts = textData;
+export const faq = faqData.items;
 
 // Пресеты для интерактивного блока GAMMA — похожи на плитки на планшете в студии.
 export const gammaPresets = [
@@ -65,11 +43,6 @@ export const beforeAfter = [
   { n: 4, alt: 'Девушка на стуле, красный фон' },
   { n: 7, alt: 'Пара на сером фоне' },
   { n: 8, alt: 'Пара в холодном круге света' },
-];
-
-export const audience = [
-  'Пары', 'Подружки на девичник', 'Родители с малышами', 'Будущие мамы',
-  'Влюблённые, которые хотят сделать предложение', 'Бабушки и дедушки', 'Те, кто приходит один',
 ];
 
 export const rub = (n: number) => n.toLocaleString('ru-RU').replace(/ /g, ' ') + ' ₽';

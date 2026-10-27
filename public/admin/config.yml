@@ -1,0 +1,200 @@
+# Настройки админки (Sveltia CMS). Каждое «Сохранить» — коммит в main,
+# после него GitHub Actions пересобирает сайт примерно за минуту.
+backend:
+  name: github
+  repo: dimasnytko-ops/hygge-site
+  branch: main
+  commit_messages:
+    create: 'Админка: добавлено «{{slug}}» ({{collection}})'
+    update: 'Админка: изменено «{{slug}}» ({{collection}})'
+    delete: 'Админка: удалено «{{slug}}» ({{collection}})'
+
+locale: ru
+site_url: https://hyggestudios.ru
+display_url: https://hyggestudios.ru
+logo_url: /brand/icon-512.png
+
+media_folder: public/media/uploads
+public_folder: /media/uploads
+
+collections:
+  # ---------- Акции: каждая — отдельный файл ----------
+  - name: promos
+    label: Акции
+    label_singular: акцию
+    description: Постоянные и временные акции. Первая активная временная акция показывается полосой вверху сайта.
+    folder: src/promos
+    extension: md
+    format: frontmatter
+    create: true
+    delete: true
+    slug: '{{year}}-{{month}}-{{day}}-{{hour}}{{minute}}'
+    summary: '{{title}} — {{kind}}'
+    sortable_fields: [order, title]
+    fields:
+      - { name: title, label: Заголовок, widget: string }
+      - name: kind
+        label: Тип
+        widget: select
+        options: [постоянная, временная]
+        default: постоянная
+      - { name: active, label: Показывать на сайте, widget: boolean, default: true, hint: Выключите, чтобы спрятать акцию, не удаляя её. }
+      - { name: order, label: Порядок, widget: number, value_type: int, default: 10, hint: Меньше число — выше на сайте. }
+      - name: until
+        label: Действует до
+        widget: datetime
+        required: false
+        time_format: false
+        format: YYYY-MM-DD
+        hint: Для временной акции. На следующий день после этой даты акция скроется сама (при ближайшей пересборке сайта).
+      - { name: body, label: Условия, widget: markdown, buttons: [bold, italic, link, bulleted-list], editor_components: [] }
+
+  # ---------- Отдельные файлы с данными сайта ----------
+  - name: data
+    label: Цены и информация
+    files:
+      - name: prices
+        label: Цены и доп. опции
+        file: src/data/prices.json
+        fields:
+          - name: prices
+            label: Таблица цен
+            widget: list
+            summary: '{{format}}: {{p45}} / {{p90}} ₽'
+            fields:
+              - { name: format, label: Формат, widget: string }
+              - { name: note, label: Подпись под форматом, widget: string, required: false }
+              - { name: p45, label: Цена за 45 минут, widget: number, value_type: int }
+              - { name: p90, label: Цена за 90 минут, widget: number, value_type: int }
+          - name: note
+            label: Примечание под таблицей
+            widget: text
+            required: false
+            hint: Оставьте пустым, чтобы не показывать. Цену за дополнительного человека пишите здесь числом — она не подставляется сама.
+          - name: extras
+            label: Доп. опции (ИИ-кадрирование, ч/б)
+            widget: list
+            summary: '{{name}}: +{{price}} ₽'
+            fields:
+              - { name: name, label: Название, widget: string }
+              - { name: price, label: Цена, widget: number, value_type: int }
+              - { name: folders, label: Какие папки получит гость, widget: string, hint: Через запятую. }
+          - name: slots
+            label: Сколько фото за слот
+            widget: list
+            summary: '{{minutes}} мин — {{photos}} фото'
+            fields:
+              - { name: minutes, label: Минут, widget: number, value_type: int }
+              - { name: photos, label: Фото в среднем, widget: string, hint: Например 200–300 }
+
+      - name: contacts
+        label: Контакты, адрес, ссылки
+        file: src/data/contacts.json
+        fields:
+          - { name: phone, label: Телефон, widget: string, required: false, hint: Как показывать на сайте. Пусто — кнопка «Позвонить» пропадёт. }
+          - { name: email, label: Почта, widget: string }
+          - name: address
+            label: Адрес
+            widget: object
+            fields:
+              - { name: city, label: Город, widget: string }
+              - { name: street, label: Улица и дом, widget: string }
+              - { name: floor, label: Этаж, widget: string }
+              - { name: howToFind, label: Как найти вход, widget: text }
+              - { name: hours, label: Часы работы, widget: string }
+          - name: links
+            label: Ссылки
+            widget: object
+            fields:
+              - { name: booking, label: Онлайн-запись (YCLIENTS), widget: string }
+              - { name: certificateBuy, label: Покупка сертификата, widget: string }
+              - { name: telegram, label: Telegram, widget: string }
+              - { name: max, label: Max, widget: string }
+              - { name: vk, label: ВКонтакте, widget: string }
+              - { name: gis, label: Карточка в 2ГИС, widget: string }
+              - { name: yandex, label: Яндекс Карты, widget: string }
+          - name: rating
+            label: Рейтинг в 2ГИС
+            widget: object
+            hint: Цифры рядом с отзывами. Обновляйте вручную, когда захотите.
+            fields:
+              - { name: value, label: Оценка, widget: number, value_type: float }
+              - { name: votes, label: Количество оценок, widget: number, value_type: int }
+              - { name: reviews, label: Количество отзывов, widget: number, value_type: int }
+
+      - name: faq
+        label: Вопросы и ответы
+        file: src/data/faq.json
+        fields:
+          - name: items
+            label: Вопросы
+            widget: list
+            summary: '{{q}}'
+            fields:
+              - { name: q, label: Вопрос, widget: string }
+              - { name: a, label: Ответ, widget: text, hint: Новый абзац — через пустую строку. }
+
+      - name: texts
+        label: Тексты разделов
+        file: src/data/texts.json
+        fields:
+          - name: hero
+            label: Первый экран
+            widget: object
+            fields:
+              - { name: lead, label: Текст под заголовком, widget: text }
+          - name: how
+            label: Как это работает — шаги
+            widget: list
+            summary: '{{title}}'
+            fields:
+              - { name: title, label: Заголовок шага, widget: string }
+              - { name: text, label: Текст, widget: text }
+          - { name: manifesto, label: Манифест (белый текст на чёрном), widget: text }
+          - { name: hygge, label: Что значит hygge, widget: text }
+          - name: privacy
+            label: Только вы и зеркало — пункты
+            widget: list
+            summary: '{{title}}'
+            fields:
+              - { name: title, label: Заголовок, widget: string }
+              - { name: text, label: Текст, widget: text }
+          - name: audience
+            label: Для кого
+            widget: object
+            fields:
+              - { name: intro, label: Вступление, widget: text }
+              - { name: list, label: Кто приходит, widget: list, field: { name: item, label: Пункт, widget: string } }
+          - name: classic
+            label: Формат CLASSIC
+            widget: object
+            fields:
+              - { name: lead, label: Описание, widget: text }
+              - { name: text, label: Под цветами фона, widget: text }
+          - name: gamma
+            label: Формат GAMMA
+            widget: object
+            fields:
+              - { name: lead, label: Описание, widget: text }
+              - { name: count, label: Число вариантов света, widget: string }
+              - { name: countText, label: Текст после числа, widget: text }
+              - { name: people, label: Про количество людей, widget: text }
+          - name: extras
+            label: ИИ-кадрирование и ч/б
+            widget: object
+            fields:
+              - { name: lead, label: Описание, widget: text }
+              - { name: private, label: Про конфиденциальность, widget: text }
+          - name: certificate
+            label: Подарочный сертификат
+            widget: object
+            fields:
+              - { name: lead, label: Описание, widget: text }
+              - name: ways
+                label: Как получить
+                widget: list
+                summary: '{{title}}'
+                fields:
+                  - { name: title, label: Заголовок, widget: string }
+                  - { name: text, label: Текст, widget: text }
+              - { name: steps, label: Как записаться по сертификату — шаги, widget: list, field: { name: step, label: Шаг, widget: text } }

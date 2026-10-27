@@ -1,0 +1,25 @@
+{
+  "links": {
+    "booking": "https://n923998.yclients.ru/",
+    "certificateBuy": "https://o3632.yclients.com/loyalty",
+    "telegram": "https://t.me/hygge_photostudios",
+    "max": "https://max.ru/u/f9LHodD0cOKB_lCiODKIkMJM8mk3jhA0feKn38sTOQ2BfrPZEMmD_hKt8NA",
+    "vk": "https://vk.ru/hygge.photostudios",
+    "gis": "https://2gis.ru/tyumen/firm/70000001076935631",
+    "yandex": "https://yandex.ru/maps/-/CXbiQAid"
+  },
+  "phone": "+7 999 366-88-80",
+  "email": "hygge.tmn@gmail.com",
+  "address": {
+    "city": "Тюмень",
+    "street": "ул. Щорса, 2 к1",
+    "floor": "цокольный этаж",
+    "howToFind": "Вход со стороны двора, большая белая вывеска HYGGE.",
+    "hours": "Ежедневно с 10:00 до 22:00, по предварительной записи"
+  },
+  "rating": {
+    "value": 5,
+    "votes": 284,
+    "reviews": 245
+  }
+}

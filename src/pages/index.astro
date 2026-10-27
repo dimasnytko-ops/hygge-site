@@ -1,8 +1,8 @@
 ---
 import Base from '../layouts/Base.astro';
 import {
-  links, phone, address, rating, slots, prices, extras, extraPerson,
-  gammaPresets, beforeAfter, audience, rub,
+  links, phone, address, rating, slots, prices, pricesNote, extras,
+  texts, faq, gammaPresets, beforeAfter, rub,
 } from '../data/site';
 
 // Акции: каждый .md в src/promos — одна акция. Файлы с «_» в начале пропускаем.
@@ -15,7 +15,8 @@ const promos = Object.entries(promoFiles)
   .sort((a, b) => (a.frontmatter.order ?? 99) - (b.frontmatter.order ?? 99));
 const strip = promos.find(({ frontmatter: f }) => f.kind === 'временная');
 
-const manifesto = 'В нашей студии нет места стеснению. Потому что нет зрителей. Пробуйте, дурачьтесь, будьте серьёзными, откройте в себе кого-то нового.';
+// Длинный ответ в админке пишется абзацами через пустую строку
+const paragraphs = (t: string) => t.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
 ---
 <Base
   title="HYGGE — студия автопортрета в Тюмени"
@@ -40,7 +41,7 @@ const manifesto = 'В нашей студии нет места стеснени
         <p class="hand hero__note">свет меняете вы</p>
       </div>
       <div class="hero__text">
-        <p class="lead">Бронируете 45 или 90 минут и остаётесь наедине с большим зеркалом и пультом. Камера спрятана за зеркалом: вы видите себя, нажимаете на пульт, и кадр готов. Вы и модель, и фотограф.</p>
+        <p class="lead">{texts.hero.lead}</p>
         <div class="btns">
           <a class="btn btn--wine" href={links.booking} target="_blank" rel="noopener">Записаться</a>
           <a class="btn" href="#how">Как это работает</a>
@@ -55,10 +56,7 @@ const manifesto = 'В нашей студии нет места стеснени
       <h2>Как это работает</h2>
       <div class="how">
         <ol class="steps">
-          <li><h3>Бронируете время</h3><p>45 или 90 минут, формат CLASSIC или GAMMA. Онлайн, в пару касаний.</p></li>
-          <li><h3>Остаётесь одни</h3><p>Только вы, большое зеркало и пульт. Включите любимую музыку.</p></li>
-          <li><h3>Снимаете себя</h3><p>Смотрите в зеркало, жмёте на пульт. Кадр сразу появляется на экране рядом с зеркалом: понравилось — дальше, нет — пробуете снова.</p></li>
-          <li><h3>Получаете фото в течение часа</h3><p>А возможно, вы даже не успеете доехать до дома: ссылка на Яндекс Диск с вашими фото придёт в ваш мессенджер.</p></li>
+          {texts.how.map((st) => <li><h3>{st.title}</h3><p>{st.text}</p></li>)}
         </ol>
         <button class="video-card" type="button" data-video="/media/video/kak-720.mp4" data-poster="/media/video/kak-poster.webp">
           <img src="/media/video/kak-poster.webp" alt="" width="720" height="1280" loading="lazy" />
@@ -72,19 +70,16 @@ const manifesto = 'В нашей студии нет места стеснени
   <section class="section dark" id="about">
     <div class="wrap">
       <p class="manifesto" data-fill>
-        {manifesto.split(' ').map((w) => <span>{w} </span>)}
+        {texts.manifesto.split(' ').map((w) => <span>{w} </span>)}
       </p>
       <p class="hygge">
         <span class="hand">hygge</span>
-        По-датски это уют и ощущение, что всё хорошо. Мы про состояние и процесс, а не только про результат: качество фото будет отличным, но главное — как вам было в моменте.
+        {texts.hygge}
       </p>
 
       <h2 class="dark__h">Только вы и зеркало</h2>
       <ul class="facts">
-        <li><h3>В фотозоне нет камер наблюдения</h3><p>Единственная камера — та, что за зеркалом, и кнопка у вас в руке.</p></li>
-        <li><h3>Мы не смотрим ваши кадры</h3><p>И не заходим в процесс. Это пространство полной свободы.</p></li>
-        <li><h3>Обработка без внешних серверов</h3><p>Если вы добавите к съёмке доп. опции — ИИ-кадрирование или ч/б фильтр, — их сделает наше собственное приложение прямо в студии. Фото никуда не отправляются и не попадают к людям.</p></li>
-        <li><h3>Фото уходят только вам</h3><p>Они автоматически загружаются на Яндекс Диск, а вам приходит запароленная ссылка. В наших соцсетях — только те фото, которыми вы поделились с нами сами.</p></li>
+        {texts.privacy.map((f) => <li><h3>{f.title}</h3><p>{f.text}</p></li>)}
       </ul>
     </div>
   </section>
@@ -92,8 +87,8 @@ const manifesto = 'В нашей студии нет места стеснени
   <!-- Для кого -->
   <section class="who">
     <div class="wrap">
-      <p class="who__h">Автопортрет — для каждого, кто хочет остановить момент и быть в нём настоящим. К нам приходят:</p>
-      <ul class="chips">{audience.map((a) => <li>{a}</li>)}</ul>
+      <p class="who__h">{texts.audience.intro}</p>
+      <ul class="chips">{texts.audience.list.map((a) => <li>{a}</li>)}</ul>
     </div>
   </section>
 
@@ -103,27 +98,27 @@ const manifesto = 'В нашей студии нет места стеснени
       <h2>Два формата съёмки</h2>
       <article class="classic">
         <h3 class="format-name">CLASSIC</h3>
-        <p class="lead">Заранее выбираете один цвет фона, мы готовим его к вашему приходу, и вся съёмка проходит на нём.</p>
+        <p class="lead">{texts.classic.lead}</p>
         <ul class="swatches" aria-label="Фоны">
           <li><span style="background:#fff"></span>Белый</li>
           <li><span style="background:#000"></span>Чёрный</li>
           <li><span style="background:#c51f26"></span>Красный</li>
         </ul>
-        <p>Фото цветные или чёрно-белые — тоже выбираете при записи. В слот входит участие в съёмке до 4 человек, допускается увеличение максимум до 6 — за {rub(extraPerson)} за каждого сверх четырёх.</p>
+        <p>{texts.classic.text}</p>
       </article>
     </div>
 
     <article class="gamma" id="gamma" data-ink={gammaPresets[1].ink} style={`--g:${gammaPresets[1].bg}`}>
       <div class="wrap">
         <h3 class="format-name">GAMMA</h3>
-        <p class="lead">Фон по умолчанию белый, а цвет и стиль света вы меняете сами с планшета — прямо во время съёмки. Попробуйте:</p>
+        <p class="lead">{texts.gamma.lead}</p>
         <div class="presets" role="group" aria-label="Пресеты света">
           {gammaPresets.map((p, i) => (
             <button type="button" data-bg={p.bg} data-ink={p.ink} aria-pressed={i === 1 ? 'true' : 'false'}>{p.name}</button>
           ))}
         </div>
-        <p class="gamma__count"><strong>30+</strong> вариантов света: цветные, классические вроде ретро и серого, и прожектор — холодный и тёплый круг.</p>
-        <p>Лучше всего раскрывается, когда в кадре один или двое. Максимум — 4 человека.</p>
+        <p class="gamma__count"><strong>{texts.gamma.count}</strong> {texts.gamma.countText}</p>
+        <p>{texts.gamma.people}</p>
         <button class="btn gamma__video" type="button" data-video="/media/video/gamma-6812-720.mp4" data-poster="/media/video/gamma-6812-poster.webp">Посмотреть формат GAMMA</button>
       </div>
     </article>
@@ -133,8 +128,8 @@ const manifesto = 'В нашей студии нет места стеснени
   <section class="section" id="extras">
     <div class="wrap">
       <h2>ИИ-кадрирование и ч/б</h2>
-      <p class="lead">Можно добавить к любой съёмке. ИИ сам выстроит композицию и переведёт в ч/б все ваши фото.</p>
-      <p class="lead extras__private">И главное: всё по-прежнему конфиденциально. Фото обрабатываются и отправляются вам автоматически, без нашего вмешательства и без внешних серверов.</p>
+      <p class="lead">{texts.extras.lead}</p>
+      <p class="lead extras__private">{texts.extras.private}</p>
       <p class="hand ba-hint">
         <svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><path d="M8 6c14 2 22 12 22 26m0 0-7-6m7 6 5-8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
         Нажмите на фото, чтобы сравнить
@@ -160,7 +155,7 @@ const manifesto = 'В нашей студии нет места стеснени
       <ul class="extras">
         {extras.map((e) => (
           <li>
-            <div><h3>{e.name}</h3><p class="muted">Вы получите папки: {e.folders.join(', ')}</p></div>
+            <div><h3>{e.name}</h3><p class="muted">Вы получите папки: {e.folders}</p></div>
             <strong>+{rub(e.price)}</strong>
           </li>
         ))}
@@ -185,7 +180,7 @@ const manifesto = 'В нашей студии нет места стеснени
           ))}
         </tbody>
       </table>
-      <p class="muted prices__note">При записи — предоплата 50%. В слоте до 4 человек; в CLASSIC можно до 6, +{rub(extraPerson)} за каждого.</p>
+      {pricesNote && <p class="muted prices__note">{pricesNote}</p>}
       <a class="btn btn--wine" href={links.booking} target="_blank" rel="noopener">Выбрать время</a>
     </div>
   </section>
@@ -194,11 +189,9 @@ const manifesto = 'В нашей студии нет места стеснени
   <section class="section cert" id="certificates">
     <div class="wrap">
       <h2>Подарочный сертификат</h2>
-      <p class="lead">На CLASSIC или GAMMA, на 45 или 90 минут — можно сразу с ИИ-кадрированием и ч/б. Стоит столько же, сколько съёмка. Действует 4 месяца, а если не успеваете — напишите нам заранее, и мы продлим.</p>
+      <p class="lead">{texts.certificate.lead}</p>
       <ul class="ways">
-        <li><h3>Номер на почту</h3><p>Покупаете онлайн, на почту приходит номер сертификата.</p></li>
-        <li><h3>Красивая открытка</h3><p>Купите онлайн и пришлите нам скриншот письма с кодом — отправим сертификат картинкой.</p></li>
-        <li><h3>Бумажный, в конверте</h3><p>Договоримся о времени, и вы заберёте его у администратора в студии.</p></li>
+        {texts.certificate.ways.map((w) => <li><h3>{w.title}</h3><p>{w.text}</p></li>)}
       </ul>
       <div class="btns">
         <a class="btn btn--ink" href={links.certificateBuy} target="_blank" rel="noopener">Купить сертификат</a>
@@ -214,12 +207,7 @@ const manifesto = 'В нашей студии нет места стеснени
       </div>
       <details class="cert__how">
         <summary>Как записаться по сертификату<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
-        <ol>
-          <li>Откройте страницу записи и выберите «Запись по подарочному сертификату».</li>
-          <li>Выберите слот, который вам подарили: 45 или 90 минут.</li>
-          <li>Выберите дату и время.</li>
-          <li>Заполните данные и в комментарии укажите номер сертификата, цвет фона (чёрный, белый или красный) и какие нужны фото — цветные или ч/б. Для GAMMA достаточно номера.</li>
-        </ol>
+        <ol>{texts.certificate.steps.map((st) => <li>{st}</li>)}</ol>
         <a class="btn btn--wine" href={links.booking} target="_blank" rel="noopener">Записаться по сертификату</a>
       </details>
     </div>
@@ -260,30 +248,9 @@ const manifesto = 'В нашей студии нет места стеснени
     <div class="wrap">
       <h2>Вопросы</h2>
       <div class="faq">
-        <details><summary>Как и когда я получу фото?</summary>
-          <p>В течение часа после съёмки пришлём запароленную ссылку на Яндекс Диск и инструкцию, как скачать фото в оригинальном качестве. Напишем в тот мессенджер, где подтверждали запись. Ссылка работает неделю, а сами фото мы храним месяц — если не успели скачать, попросите прислать снова.</p></details>
-        <details><summary>Сколько фото получится?</summary>
-          <p>В среднем 200–300 за 45 минут и 400–600 за 90 минут. Отдаём все кадры.</p></details>
-        <details><summary>Можно перенести или отменить запись?</summary>
-          <p>Перенести на любой другой день — если напишете нам не позднее чем за 24 часа до начала. Отменить — не позднее чем за 48 часов.</p></details>
-        <details><summary>Что, если я опоздаю?</summary>
-          <p>Съёмка закончится в забронированное время, поэтому опоздание сокращает слот. Лучше приходить чуть заранее.</p></details>
-        <details><summary>Сколько человек может прийти?</summary>
-          <p>До 4 человек в любом формате. В CLASSIC можно до 6 — за {rub(extraPerson)} за каждого сверх четырёх.</p></details>
-        <details><summary>Можно прийти с питомцем?</summary>
-          <p>Да, с любым, без доплаты — просто укажите в комментарии к записи, что придёте с питомцем и с каким.</p>
-          <p>Для собак у нас есть лапомойка и махровое полотенце: перед фотозоной попросим сделать лапы чистыми, чтобы ничего не испортило фон и снимки. Маленьких собак лучше помыть дома и принести на руках — так не придётся тратить время слота.</p>
-          <p>Питомец должен всё время быть рядом с вами и не бегать по студии: в фотозоне много хрупкого оборудования. За питомца во время съёмки отвечаете вы — спасибо за понимание.</p></details>
-        <details><summary>Какой реквизит есть в студии?</summary>
-          <p>Реквизита немного: мы хотим, чтобы главным в кадре были вы. Но кое-что есть — стулья разной формы, имиджевые очки, смешные шапки, лёгкие объёмные ткани, книги и газеты, искусственные цветы, шарики, ободки, лепестки роз, прозрачные белые и чёрные перчатки, длинные бусы. И вентилятор — чтобы красиво развевались волосы или платье.</p></details>
-        <details><summary>Можно принести свой реквизит?</summary>
-          <p>Да, если он не пачкает фон. Нельзя краски и конфетти — в том числе в хлопушках и шарах: свет охлаждается вентиляцией, конфетти может туда попасть и вызвать перегрев. Вместо них берите наши красные и синие лепестки роз.</p>
-          <p>Торт — можно, предупредите администратора. На фоне с ним будьте очень аккуратны: крем или крошка оставляют жирный след на бумаге. С напитками в фотозону нельзя.</p>
-          <p>Воздушные шары — можно, если пройдут в дверь фотозоны: её ширина 60 см.</p></details>
-        <details><summary>В какой обуви можно фотографироваться?</summary>
-          <p>Босиком, в носочках или в сменной обуви с чистой подошвой — мы предложим заклеить её малярным скотчем. В уличной обуви в студию нельзя. Если подошва оставляет следы, администратор попросит сниматься без обуви.</p></details>
-        <details><summary>Кто увидит мои фото?</summary>
-          <p>Только вы. Мы не смотрим ваши кадры. ИИ-кадрирование и ч/б фильтр делает наше собственное приложение прямо в студии — оно не отправляет фото на внешние серверы. Фото автоматически загружаются на Яндекс Диск, и вам отправляется запароленная ссылка. В соцсетях публикуем только те фото, которыми вы поделились с нами сами.</p></details>
+        {faq.map((f) => (
+          <details><summary>{f.q}</summary>{paragraphs(f.a).map((p) => <p>{p}</p>)}</details>
+        ))}
       </div>
     </div>
   </section>
