@@ -14,6 +14,7 @@ export const phone = contacts.phone.trim()
 
 export const address = { ...contacts.address, email: contacts.email };
 export const rating = contacts.rating;
+export const legal = contacts.legal;
 
 export const { slots, prices, extras } = priceData;
 export const pricesNote = priceData.note;

@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import {
   links, phone, address, rating, slots, prices, pricesNote, extras,
-  texts, faq, gammaPresets, beforeAfter, rub,
+  texts, faq, legal, gammaPresets, beforeAfter, rub,
 } from '../data/site';
 
 // Акции: каждый .md в src/promos — одна акция. Файлы с «_» в начале пропускаем.
@@ -275,7 +275,10 @@ const paragraphs = (t: string) => t.split(/\n\s*\n/).map((p) => p.trim()).filter
         <li><a href={`mailto:${address.email}`}>{address.email}</a></li>
       </ul>
     </div>
-    <footer class="wrap foot muted">© HYGGE, студия автопортрета, Тюмень</footer>
+    <footer class="wrap foot muted">
+      <p>© HYGGE, студия автопортрета, Тюмень</p>
+      <p>{legal.name}<br />ИНН {legal.inn} · ОГРНИП {legal.ogrnip}</p>
+    </footer>
   </section>
 
   <dialog class="player" aria-label="Видео">
@@ -662,7 +665,7 @@ const paragraphs = (t: string) => t.split(/\n\s*\n/).map((p) => p.trim()).filter
     font-size: 24px; font-weight: 700; letter-spacing: -0.02em; text-decoration: none;
   }
   .contacts li:last-child a { font-size: 18px; font-weight: 500; }
-  .foot { margin-top: 64px; font-size: 14px; color: #8c8c8c; }
+  .foot { margin-top: 64px; font-size: 14px; color: #8c8c8c; display: grid; gap: 8px; }
   @media (min-width: 1024px) { .address__in { grid-template-columns: 1.3fr 1fr; gap: 80px; align-items: end; } }
 
   /* Видеоплеер */

@@ -121,6 +121,13 @@ collections:
               - { name: value, label: Оценка, widget: number, value_type: float }
               - { name: votes, label: Количество оценок, widget: number, value_type: int }
               - { name: reviews, label: Количество отзывов, widget: number, value_type: int }
+          - name: legal
+            label: Реквизиты (подвал сайта)
+            widget: object
+            fields:
+              - { name: name, label: Наименование, widget: string, hint: Например «ИП Иванов Иван Иванович» }
+              - { name: inn, label: ИНН, widget: string, pattern: ['^\d{10}(\d{2})?$', 'ИНН — 10 или 12 цифр'] }
+              - { name: ogrnip, label: ОГРНИП, widget: string, pattern: ['^\d{15}$', 'ОГРНИП — 15 цифр'] }
 
       - name: faq
         label: Вопросы и ответы
