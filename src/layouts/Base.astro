@@ -1,0 +1,121 @@
+---
+import '../styles/global.css';
+import { links } from '../data/site';
+
+interface Props { title: string; description: string }
+const { title, description } = Astro.props;
+
+const nav = [
+  ['Как это работает', '/#how'],
+  ['Форматы', '/#formats'],
+  ['Цены', '/#prices'],
+  ['Сертификаты', '/#certificates'],
+  ['Вопросы', '/#faq'],
+  ['Адрес', '/#address'],
+];
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon.png" />
+    <link rel="icon" type="image/png" sizes="512x512" href="/brand/icon-512.png" />
+    <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL('/media/ba/pair-3-after.webp', Astro.site)} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+  </head>
+  <body>
+    <header class="top">
+      <div class="wrap top__in">
+        <a href="/" class="top__logo" aria-label="HYGGE — на главную">
+          <img src="/brand/logo.png" alt="HYGGE — студия автопортрета" width="560" height="200" />
+        </a>
+        <nav class="top__nav" aria-label="Разделы">
+          {nav.map(([label, href]) => <a href={href}>{label}</a>)}
+        </nav>
+        <a class="btn btn--wine top__book" href={links.booking} target="_blank" rel="noopener">Записаться</a>
+        <details class="menu">
+          <summary aria-label="Меню"><span></span><span></span></summary>
+          <nav class="menu__list" aria-label="Разделы">
+            {nav.map(([label, href]) => <a href={href}>{label}</a>)}
+          </nav>
+        </details>
+      </div>
+    </header>
+
+    <main><slot /></main>
+
+    <div class="bar" role="navigation" aria-label="Быстрые действия">
+      <a class="btn btn--wine" href={links.booking} target="_blank" rel="noopener">Записаться</a>
+      <a class="btn" href="/#certificates">Сертификат</a>
+    </div>
+
+    <script>
+      // Закрываем мобильное меню после выбора раздела
+      const menu = document.querySelector<HTMLDetailsElement>('.menu');
+      menu?.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => (menu.open = false)));
+    </script>
+  </body>
+</html>
+
+<style>
+  .top {
+    position: sticky; top: 0; z-index: 20;
+    background: rgb(255 255 255 / .86);
+    backdrop-filter: saturate(1.4) blur(14px);
+    -webkit-backdrop-filter: saturate(1.4) blur(14px);
+    border-bottom: 1px solid var(--line);
+    padding-top: env(safe-area-inset-top);
+  }
+  .top__in { display: flex; align-items: center; gap: 16px; height: 60px; }
+  .top__logo img { height: 36px; width: auto; }
+  .top__nav, .top__book { display: none; }
+
+  .menu { margin-left: auto; position: relative; }
+  .menu summary {
+    list-style: none; cursor: pointer;
+    width: 48px; height: 48px; margin-right: -8px;
+    display: grid; place-content: center; gap: 7px;
+  }
+  .menu summary::-webkit-details-marker { display: none; }
+  .menu summary span { display: block; width: 24px; height: 2px; background: var(--ink); transition: transform .2s; }
+  .menu[open] summary span:first-child { transform: translateY(4.5px) rotate(45deg); }
+  .menu[open] summary span:last-child { transform: translateY(-4.5px) rotate(-45deg); }
+  .menu__list {
+    position: fixed; left: 0; right: 0; top: calc(60px + env(safe-area-inset-top));
+    background: var(--paper); border-bottom: 1px solid var(--line);
+    display: grid; padding: 8px var(--gutter) 20px;
+  }
+  .menu__list a {
+    font-size: 28px; font-weight: 700; letter-spacing: -0.03em; text-decoration: none;
+    padding: 10px 0; border-bottom: 1px solid var(--line);
+  }
+
+  .bar {
+    position: fixed; z-index: 20; left: 0; right: 0; bottom: 0;
+    display: grid; grid-template-columns: 1.4fr 1fr; gap: 8px;
+    padding: 10px var(--gutter) calc(10px + env(safe-area-inset-bottom));
+    background: rgb(255 255 255 / .9);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid var(--line);
+  }
+  .bar .btn { min-height: 50px; padding: 0 12px; }
+
+  @media (min-width: 1024px) {
+    .top__in { height: 76px; gap: 28px; }
+    .top__logo img { height: 44px; }
+    .top__nav { display: flex; gap: 22px; margin-left: auto; font-size: 15px; font-weight: 500; }
+    .top__nav a { text-decoration: none; padding: 8px 0; }
+    .top__nav a:hover { text-decoration: underline; text-underline-offset: 4px; }
+    .top__book { display: inline-flex; min-height: 44px; font-size: 15px; }
+    .menu, .bar { display: none; }
+  }
+</style>

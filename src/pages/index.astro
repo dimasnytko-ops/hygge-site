@@ -1,0 +1,709 @@
+---
+import Base from '../layouts/Base.astro';
+import {
+  links, phone, address, rating, slots, prices, extras, extraPerson,
+  gammaPresets, beforeAfter, audience, rub,
+} from '../data/site';
+
+// Акции: каждый .md в src/promos — одна акция. Файлы с «_» в начале пропускаем.
+const promoFiles = import.meta.glob<any>('../promos/*.md', { eager: true });
+const today = new Date().toISOString().slice(0, 10);
+const promos = Object.entries(promoFiles)
+  .filter(([path]) => !path.split('/').pop()!.startsWith('_'))
+  .map(([, mod]) => mod)
+  .filter(({ frontmatter: f }) => f.active !== false && (!f.until || new Date(f.until).toISOString().slice(0, 10) >= today))
+  .sort((a, b) => (a.frontmatter.order ?? 99) - (b.frontmatter.order ?? 99));
+const strip = promos.find(({ frontmatter: f }) => f.kind === 'временная');
+
+const manifesto = 'В нашей студии нет места стеснению. Потому что нет зрителей. Пробуйте, дурачьтесь, будьте серьёзными, откройте в себе кого-то нового.';
+---
+<Base
+  title="HYGGE — студия автопортрета в Тюмени"
+  description="Фотостудия, где не нужен фотограф: 45 или 90 минут наедине с большим зеркалом и пультом. Форматы CLASSIC и GAMMA, фото через час на Яндекс Диске."
+>
+  {strip && (
+    <a class="strip" href="#promos"><strong>{strip.frontmatter.title}</strong></a>
+  )}
+
+  <!-- Первый экран -->
+  <section class="hero">
+    <div class="wrap hero__in">
+      <h1 class="hero__title">
+        <span><span>Фотостудия,</span></span>
+        <span><span>где не нужен</span></span>
+        <span><span>фотограф</span></span>
+      </h1>
+      <div class="hero__media finder">
+        <video autoplay muted loop playsinline preload="metadata" poster="/media/video/gamma-6806-poster.webp" width="720" height="1280" aria-label="Гость переключает цвет света на планшете">
+          <source src="/media/video/gamma-6806-loop.mp4" type="video/mp4" />
+        </video>
+        <p class="hand hero__note">свет меняете вы</p>
+      </div>
+      <div class="hero__text">
+        <p class="lead">Бронируете 45 или 90 минут и остаётесь наедине с большим зеркалом и пультом. Камера спрятана за зеркалом: вы видите себя, нажимаете на пульт, и кадр готов. Вы и модель, и фотограф.</p>
+        <div class="btns">
+          <a class="btn btn--wine" href={links.booking} target="_blank" rel="noopener">Записаться</a>
+          <a class="btn" href="#how">Как это работает</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Как это работает -->
+  <section class="section" id="how">
+    <div class="wrap">
+      <h2>Как это работает</h2>
+      <div class="how">
+        <ol class="steps">
+          <li><h3>Бронируете время</h3><p>45 или 90 минут, формат CLASSIC или GAMMA. Онлайн, в пару касаний.</p></li>
+          <li><h3>Остаётесь одни</h3><p>Только вы, большое зеркало и пульт. Включите любимую музыку.</p></li>
+          <li><h3>Снимаете себя</h3><p>Смотрите в зеркало, жмёте на пульт. Кадр сразу появляется на экране рядом с зеркалом: понравилось — дальше, нет — пробуете снова.</p></li>
+          <li><h3>Получаете фото в течение часа</h3><p>А возможно, вы даже не успеете доехать до дома: ссылка на Яндекс Диск с вашими фото придёт в ваш мессенджер.</p></li>
+        </ol>
+        <button class="video-card" type="button" data-video="/media/video/kak-720.mp4" data-poster="/media/video/kak-poster.webp">
+          <img src="/media/video/kak-poster.webp" alt="" width="720" height="1280" loading="lazy" />
+          <span class="video-card__play">Как это работает</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Манифест и приватность -->
+  <section class="section dark" id="about">
+    <div class="wrap">
+      <p class="manifesto" data-fill>
+        {manifesto.split(' ').map((w) => <span>{w} </span>)}
+      </p>
+      <p class="hygge">
+        <span class="hand">hygge</span>
+        По-датски это уют и ощущение, что всё хорошо. Мы про состояние и процесс, а не только про результат: качество фото будет отличным, но главное — как вам было в моменте.
+      </p>
+
+      <h2 class="dark__h">Только вы и зеркало</h2>
+      <ul class="facts">
+        <li><h3>В фотозоне нет камер наблюдения</h3><p>Единственная камера — та, что за зеркалом, и кнопка у вас в руке.</p></li>
+        <li><h3>Мы не смотрим ваши кадры</h3><p>И не заходим в процесс. Это пространство полной свободы.</p></li>
+        <li><h3>Обработка без внешних серверов</h3><p>Если вы добавите к съёмке доп. опции — ИИ-кадрирование или ч/б фильтр, — их сделает наше собственное приложение прямо в студии. Фото никуда не отправляются и не попадают к людям.</p></li>
+        <li><h3>Фото уходят только вам</h3><p>Они автоматически загружаются на Яндекс Диск, а вам приходит запароленная ссылка. В наших соцсетях — только те фото, которыми вы поделились с нами сами.</p></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Для кого -->
+  <section class="who">
+    <div class="wrap">
+      <p class="who__h">Автопортрет — для каждого, кто хочет остановить момент и быть в нём настоящим. К нам приходят:</p>
+      <ul class="chips">{audience.map((a) => <li>{a}</li>)}</ul>
+    </div>
+  </section>
+
+  <!-- Форматы -->
+  <section class="section" id="formats">
+    <div class="wrap">
+      <h2>Два формата съёмки</h2>
+      <article class="classic">
+        <h3 class="format-name">CLASSIC</h3>
+        <p class="lead">Заранее выбираете один цвет фона, мы готовим его к вашему приходу, и вся съёмка проходит на нём.</p>
+        <ul class="swatches" aria-label="Фоны">
+          <li><span style="background:#fff"></span>Белый</li>
+          <li><span style="background:#000"></span>Чёрный</li>
+          <li><span style="background:#c51f26"></span>Красный</li>
+        </ul>
+        <p>Фото цветные или чёрно-белые — тоже выбираете при записи. В слот входит участие в съёмке до 4 человек, допускается увеличение максимум до 6 — за {rub(extraPerson)} за каждого сверх четырёх.</p>
+      </article>
+    </div>
+
+    <article class="gamma" id="gamma" data-ink={gammaPresets[1].ink} style={`--g:${gammaPresets[1].bg}`}>
+      <div class="wrap">
+        <h3 class="format-name">GAMMA</h3>
+        <p class="lead">Фон по умолчанию белый, а цвет и стиль света вы меняете сами с планшета — прямо во время съёмки. Попробуйте:</p>
+        <div class="presets" role="group" aria-label="Пресеты света">
+          {gammaPresets.map((p, i) => (
+            <button type="button" data-bg={p.bg} data-ink={p.ink} aria-pressed={i === 1 ? 'true' : 'false'}>{p.name}</button>
+          ))}
+        </div>
+        <p class="gamma__count"><strong>30+</strong> вариантов света: цветные, классические вроде ретро и серого, и прожектор — холодный и тёплый круг.</p>
+        <p>Лучше всего раскрывается, когда в кадре один или двое. Максимум — 4 человека.</p>
+        <button class="btn gamma__video" type="button" data-video="/media/video/gamma-6812-720.mp4" data-poster="/media/video/gamma-6812-poster.webp">Посмотреть формат GAMMA</button>
+      </div>
+    </article>
+  </section>
+
+  <!-- ИИ-кадрирование и ч/б -->
+  <section class="section" id="extras">
+    <div class="wrap">
+      <h2>ИИ-кадрирование и ч/б</h2>
+      <p class="lead">Можно добавить к любой съёмке. ИИ сам выстроит композицию и переведёт в ч/б все ваши фото.</p>
+      <p class="lead extras__private">И главное: всё по-прежнему конфиденциально. Фото обрабатываются и отправляются вам автоматически, без нашего вмешательства и без внешних серверов.</p>
+      <p class="hand ba-hint">
+        <svg viewBox="0 0 40 40" width="34" height="34" aria-hidden="true"><path d="M8 6c14 2 22 12 22 26m0 0-7-6m7 6 5-8" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Нажмите на фото, чтобы сравнить
+      </p>
+    </div>
+    <ul class="ba" id="ba" aria-label="Примеры до и после">
+      {beforeAfter.map(({ n, alt }) => (
+        <li>
+          <button type="button" class="ba__card" aria-pressed="false" aria-label={`${alt}: показать после обработки`}>
+            <img src={`/media/ba/pair-${n}-before.webp`} alt={`${alt}, до обработки`} width="740" height="1112" loading="lazy" />
+            <img class="ba__after" src={`/media/ba/pair-${n}-after.webp`} alt={`${alt}, после ИИ-кадрирования и ч/б`} width="740" height="1112" loading="lazy" />
+            <span class="hand ba__label"><span class="ba__b">до</span><span class="ba__a">после</span></span>
+          </button>
+        </li>
+      ))}
+    </ul>
+    <div class="wrap ba-nav">
+      <button type="button" class="ba-nav__btn" data-dir="-1" aria-label="Предыдущие фото"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <input type="range" class="ba-nav__range" min="0" max="1000" value="0" aria-label="Пролистать примеры" aria-controls="ba" />
+      <button type="button" class="ba-nav__btn" data-dir="1" aria-label="Следующие фото"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+    <div class="wrap">
+      <ul class="extras">
+        {extras.map((e) => (
+          <li>
+            <div><h3>{e.name}</h3><p class="muted">Вы получите папки: {e.folders.join(', ')}</p></div>
+            <strong>+{rub(e.price)}</strong>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Цены -->
+  <section class="section prices-sec" id="prices">
+    <div class="wrap">
+      <h2>Цены</h2>
+      <div class="slots">
+        {slots.map((s) => (
+          <div><strong>{s.photos}</strong><span>фото в среднем за {s.minutes} минут</span></div>
+        ))}
+      </div>
+      <table class="prices">
+        <thead><tr><th scope="col">Формат</th><th scope="col">45 мин</th><th scope="col">90 мин</th></tr></thead>
+        <tbody>
+          {prices.map((p) => (
+            <tr><th scope="row">{p.format}<small>{p.note}</small></th><td>{rub(p.p45)}</td><td>{rub(p.p90)}</td></tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="muted prices__note">При записи — предоплата 50%. В слоте до 4 человек; в CLASSIC можно до 6, +{rub(extraPerson)} за каждого.</p>
+      <a class="btn btn--wine" href={links.booking} target="_blank" rel="noopener">Выбрать время</a>
+    </div>
+  </section>
+
+  <!-- Сертификаты -->
+  <section class="section cert" id="certificates">
+    <div class="wrap">
+      <h2>Подарочный сертификат</h2>
+      <p class="lead">На CLASSIC или GAMMA, на 45 или 90 минут — можно сразу с ИИ-кадрированием и ч/б. Стоит столько же, сколько съёмка. Действует 4 месяца, а если не успеваете — напишите нам заранее, и мы продлим.</p>
+      <ul class="ways">
+        <li><h3>Номер на почту</h3><p>Покупаете онлайн, на почту приходит номер сертификата.</p></li>
+        <li><h3>Красивая открытка</h3><p>Купите онлайн и пришлите нам скриншот письма с кодом — отправим сертификат картинкой.</p></li>
+        <li><h3>Бумажный, в конверте</h3><p>Договоримся о времени, и вы заберёте его у администратора в студии.</p></li>
+      </ul>
+      <div class="btns">
+        <a class="btn btn--ink" href={links.certificateBuy} target="_blank" rel="noopener">Купить сертификат</a>
+        <details class="pick">
+          <summary class="btn">Написать нам</summary>
+          <div class="pick__list">
+            <a href={links.telegram} target="_blank" rel="noopener">Telegram</a>
+            <a href={links.max} target="_blank" rel="noopener">Max</a>
+            <a href={links.vk} target="_blank" rel="noopener">ВКонтакте</a>
+          </div>
+        </details>
+        {phone && <a class="btn" href={`tel:${phone.tel}`}>Позвонить нам</a>}
+      </div>
+      <details class="cert__how">
+        <summary>Как записаться по сертификату<svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path d="M5 9l7 7 7-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <ol>
+          <li>Откройте страницу записи и выберите «Запись по подарочному сертификату».</li>
+          <li>Выберите слот, который вам подарили: 45 или 90 минут.</li>
+          <li>Выберите дату и время.</li>
+          <li>Заполните данные и в комментарии укажите номер сертификата, цвет фона (чёрный, белый или красный) и какие нужны фото — цветные или ч/б. Для GAMMA достаточно номера.</li>
+        </ol>
+        <a class="btn btn--wine" href={links.booking} target="_blank" rel="noopener">Записаться по сертификату</a>
+      </details>
+    </div>
+  </section>
+
+  <!-- Акции -->
+  {promos.length > 0 && (
+    <section class="section promos-sec" id="promos">
+      <div class="wrap">
+        <h2>Акции</h2>
+        <div class="promos">
+          {promos.map(({ frontmatter: f, Content }) => (
+            <article>
+              <h3>{f.title}</h3>
+              <Content />
+              {f.until && <p class="muted">До {new Date(f.until).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })}</p>}
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- Отзывы -->
+  <section class="section" id="reviews">
+    <div class="wrap reviews">
+      <div>
+        <h2>Отзывы</h2>
+        <p class="score"><strong>{rating.value}</strong><span>{rating.votes} оценки и {rating.reviews} отзывов в 2ГИС</span></p>
+        <a class="btn" href={links.gis} target="_blank" rel="noopener">Все отзывы в 2ГИС</a>
+      </div>
+      <div class="gis" data-gis><p class="muted">Загружаем отзывы из 2ГИС…</p></div>
+    </div>
+  </section>
+
+  <!-- Вопросы -->
+  <section class="section" id="faq">
+    <div class="wrap">
+      <h2>Вопросы</h2>
+      <div class="faq">
+        <details><summary>Как и когда я получу фото?</summary>
+          <p>В течение часа после съёмки пришлём запароленную ссылку на Яндекс Диск и инструкцию, как скачать фото в оригинальном качестве. Напишем в тот мессенджер, где подтверждали запись. Ссылка работает неделю, а сами фото мы храним месяц — если не успели скачать, попросите прислать снова.</p></details>
+        <details><summary>Сколько фото получится?</summary>
+          <p>В среднем 200–300 за 45 минут и 400–600 за 90 минут. Отдаём все кадры.</p></details>
+        <details><summary>Можно перенести или отменить запись?</summary>
+          <p>Перенести на любой другой день — если напишете нам не позднее чем за 24 часа до начала. Отменить — не позднее чем за 48 часов.</p></details>
+        <details><summary>Что, если я опоздаю?</summary>
+          <p>Съёмка закончится в забронированное время, поэтому опоздание сокращает слот. Лучше приходить чуть заранее.</p></details>
+        <details><summary>Сколько человек может прийти?</summary>
+          <p>До 4 человек в любом формате. В CLASSIC можно до 6 — за {rub(extraPerson)} за каждого сверх четырёх.</p></details>
+        <details><summary>Можно прийти с питомцем?</summary>
+          <p>Да, с любым, без доплаты — просто укажите в комментарии к записи, что придёте с питомцем и с каким.</p>
+          <p>Для собак у нас есть лапомойка и махровое полотенце: перед фотозоной попросим сделать лапы чистыми, чтобы ничего не испортило фон и снимки. Маленьких собак лучше помыть дома и принести на руках — так не придётся тратить время слота.</p>
+          <p>Питомец должен всё время быть рядом с вами и не бегать по студии: в фотозоне много хрупкого оборудования. За питомца во время съёмки отвечаете вы — спасибо за понимание.</p></details>
+        <details><summary>Какой реквизит есть в студии?</summary>
+          <p>Реквизита немного: мы хотим, чтобы главным в кадре были вы. Но кое-что есть — стулья разной формы, имиджевые очки, смешные шапки, лёгкие объёмные ткани, книги и газеты, искусственные цветы, шарики, ободки, лепестки роз, прозрачные белые и чёрные перчатки, длинные бусы. И вентилятор — чтобы красиво развевались волосы или платье.</p></details>
+        <details><summary>Можно принести свой реквизит?</summary>
+          <p>Да, если он не пачкает фон. Нельзя краски и конфетти — в том числе в хлопушках и шарах: свет охлаждается вентиляцией, конфетти может туда попасть и вызвать перегрев. Вместо них берите наши красные и синие лепестки роз.</p>
+          <p>Торт — можно, предупредите администратора. На фоне с ним будьте очень аккуратны: крем или крошка оставляют жирный след на бумаге. С напитками в фотозону нельзя.</p>
+          <p>Воздушные шары — можно, если пройдут в дверь фотозоны: её ширина 60 см.</p></details>
+        <details><summary>В какой обуви можно фотографироваться?</summary>
+          <p>Босиком, в носочках или в сменной обуви с чистой подошвой — мы предложим заклеить её малярным скотчем. В уличной обуви в студию нельзя. Если подошва оставляет следы, администратор попросит сниматься без обуви.</p></details>
+        <details><summary>Кто увидит мои фото?</summary>
+          <p>Только вы. Мы не смотрим ваши кадры. ИИ-кадрирование и ч/б фильтр делает наше собственное приложение прямо в студии — оно не отправляет фото на внешние серверы. Фото автоматически загружаются на Яндекс Диск, и вам отправляется запароленная ссылка. В соцсетях публикуем только те фото, которыми вы поделились с нами сами.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- Адрес и контакты -->
+  <section class="section address" id="address">
+    <div class="wrap address__in">
+      <div>
+        <h2>{address.street}</h2>
+        <p class="lead">{address.city}, {address.floor}. {address.howToFind}</p>
+        <p class="muted">{address.hours}</p>
+        <div class="btns">
+          <a class="btn btn--ink" href={links.gis} target="_blank" rel="noopener">Открыть в 2ГИС</a>
+          <a class="btn" href={links.yandex} target="_blank" rel="noopener">Яндекс Карты</a>
+        </div>
+      </div>
+      <ul class="contacts">
+        <li><a href={links.telegram} target="_blank" rel="noopener">Telegram</a></li>
+        <li><a href={links.max} target="_blank" rel="noopener">Max</a></li>
+        <li><a href={links.vk} target="_blank" rel="noopener">ВКонтакте</a></li>
+        {phone && <li><a href={`tel:${phone.tel}`}>{phone.display}</a></li>}
+        <li><a href={`mailto:${address.email}`}>{address.email}</a></li>
+      </ul>
+    </div>
+    <footer class="wrap foot muted">© HYGGE, студия автопортрета, Тюмень</footer>
+  </section>
+
+  <dialog class="player" aria-label="Видео">
+    <video controls playsinline></video>
+    <form method="dialog"><button class="player__close" aria-label="Закрыть">×</button></form>
+  </dialog>
+</Base>
+
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Манифест: слова «проявляются» по мере прокрутки
+  const fill = document.querySelector<HTMLElement>('[data-fill]');
+  if (fill) {
+    const words = [...fill.children] as HTMLElement[];
+    const paint = () => {
+      const r = fill.getBoundingClientRect();
+      const vh = innerHeight;
+      const p = reduce ? 1 : Math.min(1, Math.max(0, (vh * 0.85 - r.top) / (r.height + vh * 0.35)));
+      const lit = p * words.length;
+      // мягкий край в 3 слова
+      words.forEach((w, i) => w.style.setProperty('--o', String(Math.min(1, Math.max(0, (lit - i) / 3)))));
+    };
+    paint();
+    addEventListener('scroll', () => requestAnimationFrame(paint), { passive: true });
+  }
+
+  // GAMMA: пресеты меняют свет блока
+  const gamma = document.querySelector<HTMLElement>('.gamma');
+  gamma?.querySelectorAll<HTMLButtonElement>('.presets button').forEach((b) => {
+    b.addEventListener('click', () => {
+      gamma.style.setProperty('--g', b.dataset.bg!);
+      gamma.dataset.ink = b.dataset.ink!;
+      gamma.querySelectorAll('.presets button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    });
+  });
+
+  // До / после: нажатие переключает кадр
+  document.querySelectorAll<HTMLButtonElement>('.ba__card').forEach((c) => {
+    c.addEventListener('click', () => c.setAttribute('aria-pressed', String(c.getAttribute('aria-pressed') !== 'true')));
+  });
+
+  // Лента «до / после»: бегунок и стрелки синхронизированы с прокруткой
+  const ba = document.querySelector<HTMLElement>('#ba');
+  const range = document.querySelector<HTMLInputElement>('.ba-nav__range');
+  if (ba && range) {
+    const max = () => ba.scrollWidth - ba.clientWidth;
+    const sync = () => {
+      range.value = String(max() > 0 ? Math.round((ba.scrollLeft / max()) * 1000) : 0);
+    };
+    ba.addEventListener('scroll', () => requestAnimationFrame(sync), { passive: true });
+    addEventListener('resize', sync);
+    sync();
+    range.addEventListener('input', () => {
+      ba.style.scrollSnapType = 'none';
+      ba.scrollLeft = (Number(range.value) / 1000) * max();
+    });
+    range.addEventListener('change', () => { ba.style.scrollSnapType = ''; });
+    document.querySelectorAll<HTMLButtonElement>('.ba-nav__btn').forEach((b) => {
+      b.addEventListener('click', () => {
+        const card = ba.querySelector('li')!.getBoundingClientRect().width + 12;
+        ba.scrollBy({ left: Number(b.dataset.dir) * card, behavior: reduce ? 'auto' : 'smooth' });
+      });
+    });
+  }
+
+  // «Написать нам»: закрываем список при нажатии мимо него
+  const pick = document.querySelector<HTMLDetailsElement>('.pick');
+  document.addEventListener('click', (e) => { if (pick?.open && !pick.contains(e.target as Node)) pick.open = false; });
+
+  // Видео в модальном окне
+  const dialog = document.querySelector<HTMLDialogElement>('.player')!;
+  const player = dialog.querySelector('video')!;
+  document.querySelectorAll<HTMLElement>('[data-video]').forEach((b) => {
+    b.addEventListener('click', () => {
+      player.poster = b.dataset.poster ?? '';
+      player.src = b.dataset.video!;
+      dialog.showModal();
+      player.play().catch(() => {});
+    });
+  });
+  dialog.addEventListener('close', () => { player.pause(); player.removeAttribute('src'); player.load(); });
+  dialog.addEventListener('click', (e) => { if (e.target === dialog) dialog.close(); });
+
+  // Виджет отзывов 2ГИС — грузим, только когда до него долистали
+  const gis = document.querySelector<HTMLElement>('[data-gis]');
+  if (gis) {
+    const load = () => {
+      const frame = document.createElement('iframe');
+      frame.title = 'Отзывы о HYGGE в 2ГИС';
+      frame.setAttribute('sandbox', 'allow-modals allow-forms allow-scripts allow-same-origin allow-popups allow-top-navigation-by-user-activation');
+      gis.replaceChildren(frame);
+      const s = 'script';
+      const doc = frame.contentWindow!.document;
+      doc.open();
+      doc.write(`<head><${s}>window.__size__='big';window.__theme__='light';window.__branchId__='70000001076935631';window.__orgId__='70000001076935630'</${s}>`
+        + `<${s} crossorigin="anonymous" type="module" src="https://disk.2gis.com/widget-constructor/assets/iframe.js"></${s}>`
+        + `<link rel="modulepreload" crossorigin="anonymous" href="https://disk.2gis.com/widget-constructor/assets/defaults.js">`
+        + `<link rel="stylesheet" crossorigin="anonymous" href="https://disk.2gis.com/widget-constructor/assets/defaults.css"></head><body><div id="iframe"></div></body>`);
+      doc.close();
+    };
+    new IntersectionObserver((entries, io) => {
+      if (entries.some((e) => e.isIntersecting)) { io.disconnect(); load(); }
+    }, { rootMargin: '600px' }).observe(gis);
+  }
+</script>
+
+<style>
+  .strip {
+    display: block; padding: 12px var(--gutter); text-align: center;
+    background: var(--wine); color: #fff; text-decoration: none; font-size: 15px;
+  }
+
+  /* Первый экран */
+  .hero { padding: 28px 0 56px; }
+  .hero__in { display: grid; gap: 28px; }
+  .hero__title { font-size: clamp(46px, 14.2vw, 116px); line-height: .9; letter-spacing: -0.055em; font-weight: 850; }
+  .hero__title > span { display: block; overflow: hidden; padding-bottom: .04em; }
+  .hero__title > span > span { display: block; animation: rise 1s cubic-bezier(.2,.7,.1,1) both; }
+  .hero__title > span:nth-child(2) > span { animation-delay: .11s; }
+  .hero__title > span:nth-child(3) > span { animation-delay: .22s; }
+  @keyframes rise { from { transform: translateY(105%); } }
+
+  .hero__media { margin: 10px; }
+  .hero__media video { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; object-position: 50% 60%; background: #2326e6; }
+  .hero { padding-top: 20px; }
+  .hero__in { gap: 22px; }
+  .hero__note {
+    position: absolute; z-index: 3; right: 14px; bottom: 12px;
+    font-size: 26px; color: #fff; transform: rotate(-4deg);
+  }
+  .hero__text { display: grid; gap: 24px; }
+
+  @media (min-width: 1024px) {
+    .hero { padding: 56px 0 120px; }
+    .hero__in { grid-template-columns: 1.25fr 1fr; grid-template-rows: auto 1fr; column-gap: 64px; row-gap: 40px; align-items: start; }
+    .hero__media { grid-column: 2; grid-row: 1 / span 2; margin: 10px 10px 10px 0; }
+    .hero__media video { aspect-ratio: 3 / 4; }
+    .hero__text { align-self: end; }
+  }
+
+  /* Как это работает */
+  .how { display: grid; gap: 40px; }
+  .steps { list-style: none; margin: 0; padding: 0; counter-reset: s; display: grid; gap: 28px; }
+  .steps li { counter-increment: s; display: grid; grid-template-columns: 44px 1fr; column-gap: 12px; row-gap: 6px; }
+  .steps li::before {
+    content: counter(s); grid-row: span 2;
+    font-family: var(--hand); color: var(--wine); font-size: 40px; line-height: .9;
+  }
+  .steps p { color: var(--mute); }
+  .video-card {
+    position: relative; padding: 0; border: 0; background: #000; cursor: pointer;
+    width: 100%; max-width: 360px; justify-self: center; border-radius: 4px; overflow: hidden;
+  }
+  .video-card img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; opacity: .82; }
+  .video-card__play {
+    position: absolute; left: 12px; right: 12px; bottom: 12px;
+    display: flex; align-items: center; justify-content: center; gap: 10px; min-height: 52px;
+    background: #fff; color: #000; border-radius: 999px; font: 600 16px var(--sans);
+  }
+  .video-card__play::before { content: ''; border-left: 12px solid currentColor; border-block: 7px solid transparent; }
+  @media (min-width: 1024px) {
+    .how { grid-template-columns: 1.4fr 1fr; gap: 80px; align-items: start; }
+    .steps { gap: 40px; }
+  }
+
+  /* Тёмная секция */
+  .dark { background: #000; color: #fff; }
+  .manifesto {
+    font-size: clamp(30px, 8.4vw, 64px); font-weight: 700; line-height: 1.12; letter-spacing: -0.035em;
+    max-width: 16em;
+  }
+  .manifesto span { color: color-mix(in srgb, #fff calc(var(--o, 0) * 100%), #575757); transition: color .25s; }
+  .hygge { margin-top: 40px; max-width: 32em; color: #b5b5b5; font-size: 17px; }
+  .hygge .hand { display: block; font-size: 40px; color: #fff; margin-bottom: 4px; }
+  .dark__h { margin: 88px 0 28px; }
+  .facts { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+  .facts li { padding: 22px 0; border-top: 1px solid #2c2c2c; display: grid; gap: 6px; }
+  .facts p { color: #a8a8a8; }
+  @media (min-width: 1024px) {
+    .facts { grid-template-columns: 1fr 1fr; column-gap: 64px; }
+    .dark__h { margin-top: 140px; }
+  }
+
+  /* Для кого */
+  .who { padding: 56px 0; border-bottom: 1px solid var(--line); }
+  .who__h { font-size: 20px; font-weight: 600; letter-spacing: -0.015em; max-width: 30em; margin-bottom: 20px; }
+  .chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips li { padding: 10px 16px; border: 1px solid var(--ink); border-radius: 999px; font-size: 16px; }
+
+  /* Форматы */
+  .format-name { font-size: clamp(48px, 15vw, 120px); font-weight: 850; letter-spacing: -0.06em; line-height: .85; margin-bottom: 20px; }
+  .classic { display: grid; gap: 20px; padding-bottom: 64px; }
+  .classic > p:last-child { color: var(--mute); max-width: 36em; }
+  .swatches { list-style: none; margin: 4px 0; padding: 0; display: flex; gap: 20px; font-size: 15px; }
+  .swatches li { display: grid; gap: 8px; justify-items: start; }
+  .swatches span { width: 76px; height: 96px; border: 1px solid #cfcfcf; }
+
+  .gamma {
+    background: var(--g); color: #000; padding: 64px 0 72px;
+    transition: background .5s, color .3s;
+  }
+  .gamma[data-ink='light'] { color: #fff; }
+  .gamma .wrap { display: grid; gap: 22px; }
+  .presets { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; margin-inline: calc(-1 * var(--gutter)); padding: 4px var(--gutter); scrollbar-width: none; }
+  .presets::-webkit-scrollbar { display: none; }
+  .presets button {
+    flex: none; scroll-snap-align: start; min-height: 48px; padding: 0 18px;
+    border-radius: 999px; border: 1.5px solid currentColor; background: rgb(255 255 255 / .18);
+    color: inherit; font: 600 16px var(--sans); cursor: pointer;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  }
+  .gamma[data-ink='dark'] .presets button[aria-pressed='true'] { background: #000; color: #fff; border-color: #000; }
+  .gamma[data-ink='light'] .presets button[aria-pressed='true'] { background: #fff; color: #000; border-color: #fff; }
+  .gamma__count { font-size: 19px; max-width: 30em; }
+  .gamma__count strong { display: block; font-size: 64px; letter-spacing: -0.05em; line-height: 1; }
+  .gamma__video { justify-self: start; border-color: currentColor; color: inherit; }
+  @media (hover: hover) {
+    .gamma[data-ink='dark'] .gamma__video:hover { background: #000; color: #fff; }
+    .gamma[data-ink='light'] .gamma__video:hover { background: #fff; color: #000; }
+  }
+  @media (min-width: 1024px) {
+    .presets { flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; max-width: 760px; }
+    .gamma { padding: 120px 0; }
+  }
+
+  /* До / после */
+  .ba {
+    list-style: none; margin: 0 0 40px; padding: 4px var(--gutter);
+    display: flex; gap: 12px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+    scroll-padding-inline: var(--gutter);
+  }
+  .ba::-webkit-scrollbar { display: none; }
+  .ba li { flex: none; width: min(74vw, 340px); scroll-snap-align: start; }
+  .ba__card { position: relative; display: block; width: 100%; padding: 0; border: 0; background: #eee; cursor: pointer; }
+  .ba__card img { width: 100%; aspect-ratio: 740 / 1112; object-fit: cover; }
+  .ba__after { position: absolute; inset: 0; height: 100%; opacity: 0; transition: opacity .35s; }
+  .ba__card[aria-pressed='true'] .ba__after { opacity: 1; }
+  .ba__label {
+    position: absolute; left: 12px; top: 10px; font-size: 30px; color: #fff;
+    text-shadow: 0 1px 8px rgb(0 0 0 / .35);
+  }
+  .ba__a, .ba__card[aria-pressed='true'] .ba__b { display: none; }
+  .ba__card[aria-pressed='true'] .ba__a { display: inline; }
+  #extras .lead { margin-bottom: 14px; }
+  .extras__private { color: var(--mute); }
+  .ba-hint {
+    display: flex; align-items: flex-end; gap: 6px;
+    margin: 22px 0 14px; font-size: 26px; line-height: 1.1;
+  }
+  .ba-hint svg { flex: none; transform: translateY(6px); }
+
+  .ba-nav { display: flex; align-items: center; gap: 12px; margin: -24px auto 40px; }
+  .ba-nav__btn {
+    flex: none; width: 48px; height: 48px; border-radius: 50%;
+    border: 1.5px solid var(--ink); background: var(--paper); color: var(--ink);
+    display: grid; place-items: center; cursor: pointer;
+  }
+  .ba-nav__btn:active { background: var(--ink); color: var(--paper); }
+  .ba-nav__range {
+    flex: 1; min-width: 0; height: 48px; margin: 0; background: transparent; cursor: pointer;
+    -webkit-appearance: none; appearance: none;
+  }
+  .ba-nav__range::-webkit-slider-runnable-track { height: 4px; background: var(--line); border-radius: 2px; }
+  .ba-nav__range::-moz-range-track { height: 4px; background: var(--line); border-radius: 2px; }
+  .ba-nav__range::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; margin-top: -10px;
+    width: 64px; height: 24px; border-radius: 12px; background: var(--ink); border: 0;
+  }
+  .ba-nav__range::-moz-range-thumb { width: 64px; height: 24px; border-radius: 12px; background: var(--ink); border: 0; }
+  @media (hover: hover) { .ba-nav__btn:hover { background: var(--ink); color: var(--paper); } }
+  .extras { list-style: none; margin: 0; padding: 0; }
+  .extras li { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 18px 0; border-top: 1px solid var(--line); }
+  .extras h3 { font-size: 20px; margin-bottom: 4px; }
+  .extras p { font-size: 15px; }
+  .extras strong { font-size: 20px; white-space: nowrap; }
+  @media (min-width: 1024px) {
+    /* Отступ ленты и точка «прилипания» должны совпадать, иначе лента стартует со сдвигом */
+    .ba {
+      --ba-pad: max(var(--gutter), calc((100vw - var(--max)) / 2 + var(--gutter)));
+      padding-inline: var(--ba-pad);
+      scroll-padding-inline: var(--ba-pad);
+    }
+    .extras { display: grid; grid-template-columns: repeat(3, 1fr); column-gap: 40px; }
+    .extras li { flex-direction: column; }
+  }
+
+  /* Цены */
+  .prices-sec { background: #f3f3f3; }
+  .slots { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 32px; }
+  .slots div { display: grid; gap: 6px; }
+  .slots strong { font-size: clamp(38px, 11vw, 80px); font-weight: 850; letter-spacing: -0.05em; line-height: 1; }
+  .slots span { font-size: 15px; color: var(--mute); }
+  .prices { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; margin-bottom: 16px; }
+  .prices th, .prices td { text-align: left; padding: 14px 8px 14px 0; border-bottom: 1px solid #d9d9d9; vertical-align: top; }
+  .prices thead th { font-size: 14px; font-weight: 500; color: var(--mute); }
+  .prices td { font-size: 18px; font-weight: 600; white-space: nowrap; text-align: right; padding-right: 0; }
+  .prices thead th:not(:first-child) { text-align: right; }
+  .prices tbody th { font-size: 18px; font-weight: 700; }
+  .prices small { display: block; font-size: 14px; font-weight: 400; color: var(--mute); }
+  .prices__note { font-size: 15px; margin-bottom: 28px; max-width: 36em; }
+  @media (min-width: 1024px) { .prices { max-width: 760px; } .prices td { font-size: 22px; } }
+
+  /* Сертификаты */
+  .cert .lead { margin-bottom: 32px; }
+  .ways { list-style: none; margin: 0 0 28px; padding: 0; display: grid; }
+  .ways li { padding: 18px 0; border-top: 1px solid var(--line); display: grid; gap: 6px; }
+  .ways h3 { font-size: 20px; }
+  .ways p { color: var(--mute); }
+  .cert__how { margin-top: 36px; border-top: 1.5px solid var(--ink); }
+  .cert__how summary {
+    list-style: none; min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    font-weight: 700; font-size: 20px; cursor: pointer;
+  }
+  .cert__how summary::-webkit-details-marker { display: none; }
+  .cert__how summary svg {
+    flex: none; width: 40px; height: 40px; padding: 8px; border-radius: 50%;
+    border: 1.5px solid var(--ink); transition: transform .25s;
+  }
+  .cert__how[open] summary svg { transform: rotate(180deg); }
+
+  /* «Написать нам» — выбор мессенджера */
+  .pick { position: relative; }
+  .pick summary { list-style: none; }
+  .pick summary::-webkit-details-marker { display: none; }
+  .pick summary::after { content: ''; width: 8px; height: 8px; border: solid currentColor; border-width: 0 2px 2px 0; transform: translateY(-2px) rotate(45deg); transition: transform .2s; }
+  .pick[open] summary::after { transform: translateY(2px) rotate(-135deg); }
+  .pick[open] summary { background: var(--ink); color: var(--paper); }
+  .pick__list {
+    position: absolute; z-index: 5; left: 0; top: calc(100% + 8px); min-width: 220px;
+    display: grid; padding: 6px; background: var(--paper);
+    border: 1.5px solid var(--ink); border-radius: 20px;
+    box-shadow: 0 12px 32px rgb(0 0 0 / .12);
+  }
+  .pick__list a {
+    display: flex; align-items: center; min-height: 48px; padding: 0 16px; border-radius: 14px;
+    font-weight: 600; text-decoration: none;
+  }
+  .pick__list a:hover, .pick__list a:focus-visible { background: #f0f0f0; }
+  .cert__how ol { margin: 0 0 24px; padding-left: 22px; display: grid; gap: 10px; }
+  @media (min-width: 1024px) { .ways { grid-template-columns: repeat(3, 1fr); column-gap: 40px; } }
+
+  /* Акции */
+  .promos-sec { background: var(--wine); color: #fff; }
+  .promos { display: grid; gap: 0; }
+  .promos article { padding: 22px 0; border-top: 1px solid rgb(255 255 255 / .3); display: grid; gap: 8px; }
+  .promos article :global(p) { color: rgb(255 255 255 / .82); max-width: 36em; }
+  @media (min-width: 1024px) { .promos { grid-template-columns: 1fr 1fr; column-gap: 64px; } }
+
+  /* Отзывы */
+  .reviews { display: grid; gap: 32px; }
+  .score { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
+  .score strong { font-size: 96px; font-weight: 850; letter-spacing: -0.06em; line-height: .9; }
+  .score strong::after { content: '★'; font-size: 40px; vertical-align: top; color: var(--wine); margin-left: 4px; }
+  .score span { color: var(--mute); max-width: 12em; }
+  .gis { min-height: 400px; }
+  .gis :global(iframe) { display: block; width: 100%; max-width: 528px; height: 824px; border: 0; }
+  @media (min-width: 1024px) { .reviews { grid-template-columns: 1fr 528px; gap: 80px; } }
+
+  /* Вопросы */
+  .faq { border-top: 1.5px solid var(--ink); max-width: 820px; }
+  .faq details { border-bottom: 1px solid var(--line); }
+  .faq summary {
+    list-style: none; cursor: pointer; min-height: 64px; padding: 16px 40px 16px 0; position: relative;
+    display: flex; align-items: center; font-size: 19px; font-weight: 650; letter-spacing: -0.015em;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after { content: '+'; position: absolute; right: 4px; font-size: 28px; font-weight: 300; transition: transform .2s; }
+  .faq details[open] summary::after { transform: rotate(45deg); }
+  .faq details p { padding-bottom: 14px; max-width: 40em; color: #333; }
+  .faq details p:last-child { padding-bottom: 24px; }
+
+  /* Адрес */
+  .address { background: #000; color: #fff; padding-bottom: 32px; }
+  .address__in { display: grid; gap: 40px; }
+  .address h2 { margin-bottom: 20px; }
+  .address .lead { margin-bottom: 8px; }
+  .address .muted { color: #a8a8a8; margin-bottom: 28px; }
+  .address .btn--ink { background: #fff; color: #000; border-color: #fff; }
+  .address .btn:not(.btn--ink) { border-color: #fff; color: #fff; }
+  .contacts { list-style: none; margin: 0; padding: 0; }
+  .contacts a {
+    display: flex; align-items: center; min-height: 60px; border-top: 1px solid #2c2c2c;
+    font-size: 24px; font-weight: 700; letter-spacing: -0.02em; text-decoration: none;
+  }
+  .contacts li:last-child a { font-size: 18px; font-weight: 500; }
+  .foot { margin-top: 64px; font-size: 14px; color: #8c8c8c; }
+  @media (min-width: 1024px) { .address__in { grid-template-columns: 1.3fr 1fr; gap: 80px; align-items: end; } }
+
+  /* Видеоплеер */
+  .player { padding: 0; border: 0; background: transparent; max-width: min(92vw, 440px); max-height: 92dvh; overflow: visible; }
+  .player::backdrop { background: rgb(0 0 0 / .86); }
+  .player video { width: 100%; max-height: 86dvh; background: #000; }
+  .player__close {
+    position: absolute; top: -56px; right: 0; width: 48px; height: 48px;
+    border: 0; border-radius: 50%; background: #fff; color: #000; font-size: 28px; line-height: 1; cursor: pointer;
+  }
+</style>
