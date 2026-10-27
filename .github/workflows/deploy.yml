@@ -25,7 +25,14 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - run: npm run build
+      - run: npm run build 2>&1 | tee build.log; exit ${PIPESTATUS[0]}
+        shell: bash
+      # Если сборка упала — выводим конец лога в аннотацию, чтобы ошибку было видно на странице запуска
+      - if: failure()
+        shell: bash
+        run: |
+          msg=$(tail -40 build.log | sed 's/\x1b\[[0-9;]*m//g' | sed ':a;N;$!ba;s/%/%25/g;s/\r//g;s/\n/%0A/g')
+          echo "::error title=Ошибка сборки::$msg"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
