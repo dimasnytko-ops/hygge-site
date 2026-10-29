@@ -2,7 +2,7 @@
 import Base from '../layouts/Base.astro';
 import {
   links, phone, address, rating, slots, prices, pricesNote, extras,
-  texts, faq, legal, gammaPresets, beforeAfter, rub,
+  texts, faq, legal, gammaPresets, gammaDefault, beforeAfter, rub,
 } from '../data/site';
 
 // Акции: каждый .md в src/promos — одна акция. Файлы с «_» в начале пропускаем.
@@ -14,6 +14,8 @@ const promos = Object.entries(promoFiles)
   .filter(({ frontmatter: f }) => f.active !== false && (!f.until || new Date(f.until).toISOString().slice(0, 10) >= today))
   .sort((a, b) => (a.frontmatter.order ?? 99) - (b.frontmatter.order ?? 99));
 const strip = promos.find(({ frontmatter: f }) => f.kind === 'временная');
+
+const gammaStart = gammaPresets.find((p) => p.name === gammaDefault) ?? gammaPresets[0];
 
 // Длинный ответ в админке пишется абзацами через пустую строку
 const paragraphs = (t: string) => t.split(/\n\s*\n/).map((p) => p.trim()).filter(Boolean);
@@ -108,13 +110,13 @@ const paragraphs = (t: string) => t.split(/\n\s*\n/).map((p) => p.trim()).filter
       </article>
     </div>
 
-    <article class="gamma" id="gamma" data-ink={gammaPresets[1].ink} style={`--g:${gammaPresets[1].bg}`}>
+    <article class="gamma" id="gamma" data-ink={gammaStart.ink} style={`--g:${gammaStart.bg}`}>
       <div class="wrap">
         <h3 class="format-name">GAMMA</h3>
         <p class="lead">{texts.gamma.lead}</p>
         <div class="presets" role="group" aria-label="Пресеты света">
-          {gammaPresets.map((p, i) => (
-            <button type="button" data-bg={p.bg} data-ink={p.ink} aria-pressed={i === 1 ? 'true' : 'false'}>{p.name}</button>
+          {gammaPresets.map((p) => (
+            <button type="button" data-bg={p.bg} data-ink={p.ink} aria-pressed={p === gammaStart ? 'true' : 'false'}>{p.name}</button>
           ))}
         </div>
         <p class="gamma__count"><strong>{texts.gamma.count}</strong> {texts.gamma.countText}</p>
