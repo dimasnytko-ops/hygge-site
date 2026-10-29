@@ -23,17 +23,17 @@ export const faq = faqData.items;
 
 // Пресеты для интерактивного блока GAMMA — похожи на плитки на планшете в студии.
 // При загрузке выбран пресет с именем gammaDefault.
+// В пресетах «…круг» прожектор стоит в правом нижнем углу, чтобы не попадать под текст.
 export const gammaDefault = 'Ретро';
 export const gammaPresets = [
   { name: 'Ретро', bg: 'radial-gradient(60% 45% at 50% 42%, #e8c9a0 0%, #c79c6c 60%, #6d4a2c 100%)', ink: 'dark' },
   { name: 'Розовый', bg: 'radial-gradient(110% 90% at 70% 30%, #ff8ad8 0%, #c36bff 55%, #8a5cff 100%)', ink: 'dark' },
   { name: 'Синий', bg: 'radial-gradient(120% 90% at 40% 30%, #4a52ff 0%, #2326e6 60%, #1215a8 100%)', ink: 'light' },
-  { name: 'Красный', bg: 'radial-gradient(120% 90% at 50% 30%, #ff5a4a 0%, #e0262b 55%, #a3141c 100%)', ink: 'light' },
+  { name: 'Холодный круг', bg: 'radial-gradient(circle at 100% 100%, #cfeee6 0 170px, #0d1210 171px 100%)', ink: 'light' },
   { name: 'Голубой', bg: 'radial-gradient(120% 90% at 50% 30%, #c9f1ff 0%, #7fd3f5 60%, #4aa7d6 100%)', ink: 'dark' },
   { name: 'Белый', bg: 'radial-gradient(120% 90% at 50% 35%, #ffffff 0%, #e9e9e9 70%, #d6d6d6 100%)', ink: 'dark' },
-  // Круг-прожектор стоит в правом нижнем углу, чтобы не попадать под текст
   { name: 'Серый с кругом', bg: 'radial-gradient(circle at 100% 100%, #d9d9d9 0 170px, #5e5e5e 171px 100%)', ink: 'light' },
-  { name: 'Холодный круг', bg: 'radial-gradient(circle at 100% 100%, #cfeee6 0 170px, #0d1210 171px 100%)', ink: 'light' },
+  { name: 'Красный', bg: 'radial-gradient(120% 90% at 50% 30%, #ff5a4a 0%, #e0262b 55%, #a3141c 100%)', ink: 'light' },
   { name: 'Тёплый круг', bg: 'radial-gradient(circle at 100% 100%, #f1dcc0 0 170px, #3f2d20 171px 100%)', ink: 'light' },
 ];
 
